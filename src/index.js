@@ -16,6 +16,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const commentUl = document.getElementById("comments")
 
   const commentInputField = document.getElementById("comment_input")
+
+  document.addEventListener("click", handleClick)
   
 
   function init() {
@@ -33,10 +35,26 @@ document.addEventListener('DOMContentLoaded', () => {
     mainLikes.innerText = image.like_count
 
     commentUl.innerHTML += `
-    ${image.comments.map((comment) => `<li>${comment.content}</li>`).join("")}`
+    ${image.comments.map((comment) => `<li class="comment-li" id="comment-li-id-${comment.id}"><button id="comment-btn-id-${comment.id}" class="remove-btn">Remove Comment</button>       ${comment.content}</li>`).join("")}`
 
     likeBtn.dataset.id = image.id
     commentForm.dataset.id = image.id
+  }
+
+  function handleClick(e) {
+    if(e.target.className === "remove-btn") {
+      removeComment(e.target.id.slice(15))
+    }
+  }
+
+  function removeComment(id) {
+    let deleteTarget = document.getElementById(`comment-li-id-${id}`)
+
+    fetch((commentsURL+id), {
+      method: "DELETE"
+    })
+
+    deleteTarget.remove()
   }
 
   function handleCommentSubmit(e) {
@@ -47,7 +65,7 @@ document.addEventListener('DOMContentLoaded', () => {
       image_id: e.target.dataset.id
     }
     commentUl.innerHTML += `
-    <li class="comment-li" id="image-id-${comment.id}">${comment.content}</li>`
+    <li class="comment-li" id="comment-li-id-${comment.id}"><button id="comment-btn-id-${comment.id}" class="remove-btn">Remove Comment</button>       ${comment.content}</li>`
 
     fetch((commentsURL), {
       method: "POST",
